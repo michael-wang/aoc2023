@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	rock uint8 = iota
-	paper
-	scissor
+	d2_Rock uint8 = iota
+	d2_Paper
+	d2_Scissor
 )
 
 type d2_Round struct {
@@ -19,9 +19,9 @@ type d2_Round struct {
 
 func (g d2_Round) toString() string {
 	m := map[uint8]string{
-		rock:    "✊",
-		paper:   "✋",
-		scissor: "✌️ ",
+		d2_Rock:    "✊",
+		d2_Paper:   "✋",
+		d2_Scissor: "✌️ ",
 	}
 	return fmt.Sprintf("%s    %s", m[g.op], m[g.my])
 }
@@ -54,22 +54,22 @@ func d02_ParseMove(line string) d2_Round {
 	g := d2_Round{}
 	switch line[0] {
 	case 'A':
-		g.op = rock
+		g.op = d2_Rock
 	case 'B':
-		g.op = paper
+		g.op = d2_Paper
 	case 'C':
-		g.op = scissor
+		g.op = d2_Scissor
 	default:
 		panic(fmt.Sprintf("Invalid opponent move: %x (valid: 'A', 'B', or 'C')", line[0]))
 	}
 
 	switch line[2] {
 	case 'X':
-		g.my = rock
+		g.my = d2_Rock
 	case 'Y':
-		g.my = paper
+		g.my = d2_Paper
 	case 'Z':
-		g.my = scissor
+		g.my = d2_Scissor
 	default:
 		panic(fmt.Sprintf("Invalid my move: %x (valid: 'X', 'Y', or 'Z')", line[2]))
 	}
@@ -78,20 +78,20 @@ func d02_ParseMove(line string) d2_Round {
 
 func d02_CountScore(gg []d2_Round) (score int) {
 	m := map[uint8]map[uint8]int{
-		rock: {
-			rock:    1 + 3,
-			paper:   2 + 6,
-			scissor: 3 + 0,
+		d2_Rock: {
+			d2_Rock:    1 + 3,
+			d2_Paper:   2 + 6,
+			d2_Scissor: 3 + 0,
 		},
-		paper: {
-			rock:    1 + 0,
-			paper:   2 + 3,
-			scissor: 3 + 6,
+		d2_Paper: {
+			d2_Rock:    1 + 0,
+			d2_Paper:   2 + 3,
+			d2_Scissor: 3 + 6,
 		},
-		scissor: {
-			rock:    1 + 6,
-			paper:   2 + 0,
-			scissor: 3 + 3,
+		d2_Scissor: {
+			d2_Rock:    1 + 6,
+			d2_Paper:   2 + 0,
+			d2_Scissor: 3 + 3,
 		},
 	}
 
