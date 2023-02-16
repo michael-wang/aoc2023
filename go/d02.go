@@ -1,3 +1,7 @@
+// TODO After done, I realize this quiz is all about table look up. All I need
+// is a 2 level table: from [A/B/C] to [X/Y/Z] to score.
+// The 2nd part just need an update to the table, and corresponding change to
+// score.
 package main
 
 import (
@@ -7,32 +11,42 @@ import (
 )
 
 const (
-	d2_Rock uint8 = iota
-	d2_Paper
-	d2_Scissor
+	d02_Rock uint8 = iota
+	d02_Paper
+	d02_Scissor
 )
 
-type d2_Round struct {
-	op uint8
-	my uint8
+type d02_Round struct {
+	op     uint8
+	my     uint8
+	result uint8
 }
 
-func (g d2_Round) toString() string {
+func (r d02_Round) toString() string {
 	m := map[uint8]string{
-		d2_Rock:    "✊",
-		d2_Paper:   "✋",
-		d2_Scissor: "✌️ ",
+		d02_Rock:    "✊",
+		d02_Paper:   "✋",
+		d02_Scissor: "✌️ ",
 	}
-	return fmt.Sprintf("%s    %s", m[g.op], m[g.my])
+	if r.result == d02_Unknown {
+		return fmt.Sprintf("%s    %s", m[r.op], m[r.my])
+	}
+
+	n := map[uint8]string{
+		d02_Lose: "👎",
+		d02_Win:  "👍",
+		d02_Draw: "🤝",
+	}
+	return fmt.Sprintf("%s    %s    %s", m[r.op], m[r.my], n[r.result])
 }
 
 func d02_Part1() {
-	games := d02_Parse("../data/day02.txt")
-	score := d02_CountScore(games)
-	fmt.Println("Games score: ", score)
+	rounds := d02_Parse("../data/day02.txt")
+	score := d02_CountScore(rounds)
+	fmt.Println("[Part 1] Games score: ", score)
 }
 
-func d02_Parse(name string) (games []d2_Round) {
+func d02_Parse(name string, withResult ...bool) (rounds []d02_Round) {
 	f, err := os.Open(name)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to open file: %s", name))
@@ -41,68 +55,129 @@ func d02_Parse(name string) (games []d2_Round) {
 
 	input := bufio.NewScanner(f)
 	for input.Scan() {
-		g := d02_ParseMove(input.Text())
-		games = append(games, g)
+		line := input.Text()
+		if len(line) != 3 {
+			panic(fmt.Sprintf("Expect 3 char line but got: %s", line))
+		}
+
+		r := d02_Round{
+			op: d02_AsMove(line[0]),
+		}
+		if len(withResult) > 0 && withResult[0] {
+			r.result = d02_AsResult(line[2])
+		} else {
+			r.my = d02_AsMove(line[2])
+		}
+
+		rounds = append(rounds, r)
 	}
 	return
 }
 
-func d02_ParseMove(line string) d2_Round {
-	if len(line) != 3 {
-		panic(fmt.Sprintf("Expect 3 char line but got: %s", line))
-	}
-	g := d2_Round{}
-	switch line[0] {
+func d02_AsMove(c byte) uint8 {
+	switch c {
 	case 'A':
-		g.op = d2_Rock
-	case 'B':
-		g.op = d2_Paper
-	case 'C':
-		g.op = d2_Scissor
-	default:
-		panic(fmt.Sprintf("Invalid opponent move: %x (valid: 'A', 'B', or 'C')", line[0]))
-	}
-
-	switch line[2] {
+		fallthrough
 	case 'X':
-		g.my = d2_Rock
+		return d02_Rock
+	case 'B':
+		fallthrough
 	case 'Y':
-		g.my = d2_Paper
+		return d02_Paper
+	case 'C':
+		fallthrough
 	case 'Z':
-		g.my = d2_Scissor
+		return d02_Scissor
 	default:
-		panic(fmt.Sprintf("Invalid my move: %x (valid: 'X', 'Y', or 'Z')", line[2]))
+		panic(fmt.Sprintf("Invalid opponent move: %x (valid: 'A', 'B', or 'C')", c))
 	}
-	return g
 }
 
-func d02_CountScore(gg []d2_Round) (score int) {
+func d02_CountScore(rr []d02_Round) (score int) {
 	m := map[uint8]map[uint8]int{
-		d2_Rock: {
-			d2_Rock:    1 + 3,
-			d2_Paper:   2 + 6,
-			d2_Scissor: 3 + 0,
+		d02_Rock: {
+			d02_Rock:    1 + 3,
+			d02_Paper:   2 + 6,
+			d02_Scissor: 3 + 0,
 		},
-		d2_Paper: {
-			d2_Rock:    1 + 0,
-			d2_Paper:   2 + 3,
-			d2_Scissor: 3 + 6,
+		d02_Paper: {
+			d02_Rock:    1 + 0,
+			d02_Paper:   2 + 3,
+			d02_Scissor: 3 + 6,
 		},
-		d2_Scissor: {
-			d2_Rock:    1 + 6,
-			d2_Paper:   2 + 0,
-			d2_Scissor: 3 + 3,
+		d02_Scissor: {
+			d02_Rock:    1 + 6,
+			d02_Paper:   2 + 0,
+			d02_Scissor: 3 + 3,
 		},
 	}
 
 	fmt.Println("對手  我  分數")
-	for i := 0; i < len(gg); i++ {
-		game := gg[i]
-		s := m[game.op][game.my]
+	for i, r := range rr {
+		s := m[r.op][r.my]
 		if i < 7 {
-			fmt.Printf("%s    %d\n", game.toString(), s)
+			fmt.Printf("%s    %d\n", r.toString(), s)
 		}
 		score += s
+	}
+	return
+}
+
+// for part 2, extending d02_Round by adding result field with these values.
+const (
+	d02_Unknown uint8 = iota
+	d02_Lose
+	d02_Draw
+	d02_Win
+)
+
+func d02_AsResult(c byte) uint8 {
+	switch c {
+	case 'X':
+		return d02_Lose
+	case 'Y':
+		return d02_Draw
+	case 'Z':
+		return d02_Win
+	default:
+		panic(fmt.Sprintf("Invalid result: %x (valid: 'X', 'Y', or 'Z')", c))
+	}
+}
+
+func d02_Part2() {
+	rounds := d02_Parse("../data/day02.txt", true)
+	rounds = d02_CalculateMyMove(rounds)
+	score := d02_CountScore(rounds)
+	fmt.Println("[Part 2] Games score: ", score)
+}
+
+func d02_CalculateMyMove(rr []d02_Round) (out []d02_Round) {
+	// map from op to result to my
+	m := map[uint8]map[uint8]uint8{
+		d02_Rock: {
+			d02_Lose: d02_Scissor,
+			d02_Win:  d02_Paper,
+			d02_Draw: d02_Rock,
+		},
+		d02_Paper: {
+			d02_Lose: d02_Rock,
+			d02_Win:  d02_Scissor,
+			d02_Draw: d02_Paper,
+		},
+		d02_Scissor: {
+			d02_Lose: d02_Paper,
+			d02_Win:  d02_Rock,
+			d02_Draw: d02_Scissor,
+		},
+	}
+
+	for _, r := range rr {
+		o := d02_Round{
+			op:     r.op,
+			my:     m[r.op][r.result],
+			result: r.result,
+		}
+		out = append(out, o)
 	}
 	return
 }

@@ -9,7 +9,7 @@ import (
 
 func d01_Part1() {
 	elves := d01_Parse("../data/day01.txt")
-	max, _ := d1_MaxElf(elves)
+	max, _ := d01_MaxElf(elves)
 	fmt.Printf("[Day01 Part1] Max elf calories: %d\n", max)
 }
 
@@ -17,7 +17,7 @@ func d01_Part2() {
 	elves := d01_Parse("../data/day01.txt")
 	sum := 0
 	for i := 0; i < 3; i++ {
-		max, i := d1_MaxElf(elves)
+		max, i := d01_MaxElf(elves)
 		sum += max
 		elves = slicePop(elves, i)
 	}
@@ -53,7 +53,7 @@ func d01_Parse(name string) [][]int {
 	return elves
 }
 
-func d1_MaxElf(elves [][]int) (max, index int) {
+func d01_MaxElf(elves [][]int) (max, index int) {
 	for i, elf := range elves {
 		curr := 0
 		for _, calories := range elf {
