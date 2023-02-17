@@ -28,14 +28,12 @@ func (r d02_Round) toString() string {
 		d02_Paper:   "✋",
 		d02_Scissor: "✌️ ",
 	}
-	if r.result == d02_Unknown {
-		return fmt.Sprintf("%s    %s", m[r.op], m[r.my])
-	}
 
 	n := map[uint8]string{
-		d02_Lose: "👎",
-		d02_Win:  "👍",
-		d02_Draw: "🤝",
+		d02_Unknown: "？",
+		d02_Lose:    "👎",
+		d02_Win:     "👍",
+		d02_Draw:    "🤝",
 	}
 	return fmt.Sprintf("%s    %s    %s", m[r.op], m[r.my], n[r.result])
 }
@@ -112,11 +110,11 @@ func d02_CountScore(rr []d02_Round) (score int) {
 		},
 	}
 
-	fmt.Println("對手  我  分數")
+	fmt.Println("對手  我   結果   分數")
 	for i, r := range rr {
 		s := m[r.op][r.my]
 		if i < 7 {
-			fmt.Printf("%s    %d\n", r.toString(), s)
+			fmt.Printf("%s     %d\n", r.toString(), s)
 		}
 		score += s
 	}
@@ -146,12 +144,12 @@ func d02_AsResult(c byte) uint8 {
 
 func d02_Part2() {
 	rounds := d02_Parse("../data/day02.txt", true)
-	rounds = d02_CalculateMyMove(rounds)
+	d02_CalculateMyMove(rounds)
 	score := d02_CountScore(rounds)
 	fmt.Println("[Part 2] Games score: ", score)
 }
 
-func d02_CalculateMyMove(rr []d02_Round) (out []d02_Round) {
+func d02_CalculateMyMove(rr []d02_Round) {
 	// map from op to result to my
 	m := map[uint8]map[uint8]uint8{
 		d02_Rock: {
@@ -171,13 +169,7 @@ func d02_CalculateMyMove(rr []d02_Round) (out []d02_Round) {
 		},
 	}
 
-	for _, r := range rr {
-		o := d02_Round{
-			op:     r.op,
-			my:     m[r.op][r.result],
-			result: r.result,
-		}
-		out = append(out, o)
+	for i, r := range rr {
+		rr[i].my = m[r.op][r.result]
 	}
-	return
 }
