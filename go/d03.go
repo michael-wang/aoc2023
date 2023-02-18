@@ -6,20 +6,24 @@ import (
 	"os"
 )
 
-func d03_Part1() {
-	name := "../data/day03.txt"
-	f, err := os.Open(name)
+func d03() {
+	d03_Part1("../data/day03.txt")
+	d03_Part2("../data/day03.txt")
+}
+
+func d03_Part1(data string) (answer int) {
+	f, err := os.Open(data)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to open file: %s", name))
+		panic(fmt.Sprintf("Failed to open file: %s", data))
 	}
 	defer f.Close()
 
 	input := bufio.NewScanner(f)
-	sum := 0
 	for input.Scan() {
-		sum += d03_SumPriorities(input.Text())
+		answer += d03_SumPriorities(input.Text())
 	}
-	fmt.Println("[Day03 Part1] Priority sum: ", sum)
+	fmt.Println("[Day03 Part1] Priority sum: ", answer)
+	return
 }
 
 func d03_SumPriorities(r string) (sum int) {
@@ -52,17 +56,15 @@ func d03_Priority(char rune) int {
 	}
 }
 
-func d03_Part2() {
-	name := "../data/day03.txt"
-	f, err := os.Open(name)
+func d03_Part2(data string) (answer int) {
+	f, err := os.Open(data)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to open file: %s", name))
+		panic(fmt.Sprintf("Failed to open file: %s", data))
 	}
 	defer f.Close()
 
 	input := bufio.NewScanner(f)
 	var group [3]string
-	sum := 0
 	i := 0
 	for input.Scan() {
 		group[i] = input.Text()
@@ -73,11 +75,12 @@ func d03_Part2() {
 		}
 
 		char := d03_FindCommon(group)
-		sum += d03_Priority(char)
+		answer += d03_Priority(char)
 		// Reset group index
 		i = 0
 	}
-	fmt.Printf("[Day03 Part2] Sum of common items: %d\n", sum)
+	fmt.Printf("[Day03 Part2] Sum of common items: %d\n", answer)
+	return
 }
 
 func d03_FindCommon(group [3]string) (comm rune) {

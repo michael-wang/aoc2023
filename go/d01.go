@@ -7,21 +7,27 @@ import (
 	"strconv"
 )
 
-func d01_Part1() {
-	elves := d01_Parse("../data/day01.txt")
-	max, _ := d01_MaxElf(elves)
-	fmt.Printf("[Day01 Part1] Max elf calories: %d\n", max)
+func d01() {
+	d01_Part1("../data/day01.txt")
+	d01_Part2("../data/day01.txt")
 }
 
-func d01_Part2() {
-	elves := d01_Parse("../data/day01.txt")
-	sum := 0
+func d01_Part1(data string) (answer int) {
+	elves := d01_Parse(data)
+	answer, _ = d01_MaxElf(elves)
+	fmt.Printf("[Day01 Part1] Max elf calories: %d\n", answer)
+	return
+}
+
+func d01_Part2(data string) (answer int) {
+	elves := d01_Parse(data)
 	for i := 0; i < 3; i++ {
 		max, i := d01_MaxElf(elves)
-		sum += max
+		answer += max
 		elves = slicePop(elves, i)
 	}
-	fmt.Println("[Day01 Part2] Sum of top 3 elves: ", sum)
+	fmt.Println("[Day01 Part2] Sum of top 3 elves: ", answer)
+	return
 }
 
 func d01_Parse(name string) [][]int {

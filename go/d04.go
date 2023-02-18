@@ -8,21 +8,21 @@ import (
 	"strings"
 )
 
-func d04_Solution() {
-	data := "../data/day04.txt"
+func d04() {
+	d04_Part1and2("../data/d04.txt")
+}
+func d04_Part1and2(data string) (contains, overlap int) {
 	f, err := os.Open(data)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to open file: %s", data))
 	}
 
 	input := bufio.NewScanner(f)
-	fullyContains := 0
-	overlap := 0
 	for input.Scan() {
 		pp := d04_ParsePairs(input.Text())
 
 		if d04_FullyContains(pp[0], pp[1]) {
-			fullyContains++
+			contains++
 			// fmt.Printf("%v,%v\n", *pp[0], *pp[1])
 		}
 
@@ -30,8 +30,9 @@ func d04_Solution() {
 			overlap++
 		}
 	}
-	fmt.Println("Number of fully contains: ", fullyContains)
+	fmt.Println("Number of fully contains: ", contains)
 	fmt.Println("Number of overlap: ", overlap)
+	return
 }
 
 type d04_Pair struct {

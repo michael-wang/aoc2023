@@ -38,13 +38,19 @@ func (r d02_Round) toString() string {
 	return fmt.Sprintf("%s    %s    %s", m[r.op], m[r.my], n[r.result])
 }
 
-func d02_Part1() {
-	rounds := d02_Parse("../data/day02.txt")
-	score := d02_CountScore(rounds)
-	fmt.Println("[Part 1] Games score: ", score)
+func d02() {
+	d02_Part1("../data/day02.txt")
+	d02_Part2("../data/day02.txt")
 }
 
-func d02_Parse(name string, withResult ...bool) (rounds []d02_Round) {
+func d02_Part1(data string) (answer int) {
+	rounds := d02_Parse(data)
+	answer = d02_CountScore(rounds)
+	fmt.Println("[Part 1] Games score: ", answer)
+	return
+}
+
+func d02_Parse(name string, asResult ...bool) (rounds []d02_Round) {
 	f, err := os.Open(name)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to open file: %s", name))
@@ -61,7 +67,7 @@ func d02_Parse(name string, withResult ...bool) (rounds []d02_Round) {
 		r := d02_Round{
 			op: d02_AsMove(line[0]),
 		}
-		if len(withResult) > 0 && withResult[0] {
+		if len(asResult) > 0 && asResult[0] {
 			r.result = d02_AsResult(line[2])
 		} else {
 			r.my = d02_AsMove(line[2])
@@ -142,11 +148,12 @@ func d02_AsResult(c byte) uint8 {
 	}
 }
 
-func d02_Part2() {
-	rounds := d02_Parse("../data/day02.txt", true)
+func d02_Part2(data string) (answer int) {
+	rounds := d02_Parse(data, true)
 	d02_CalculateMyMove(rounds)
-	score := d02_CountScore(rounds)
-	fmt.Println("[Part 2] Games score: ", score)
+	answer = d02_CountScore(rounds)
+	fmt.Println("[Part 2] Games score: ", answer)
+	return
 }
 
 func d02_CalculateMyMove(rr []d02_Round) {
