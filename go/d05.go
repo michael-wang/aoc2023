@@ -11,17 +11,25 @@ import (
 )
 
 func d05() {
-	d05_Part1("../data/d05_example.txt")
+	d05_Part1("../data/d05.txt")
+	d05_Part2("../data/d05.txt")
 }
 
 func d05_Part1(data string) (answer string) {
-	count, height := d05_CountStacks(data)
-	answer = d05_ParseStack(data, count, height)
+	width, height := d05_CountStacks(data)
+	answer = d05_ParseStack(data, width, height, false)
 	fmt.Println("[Day05 Par1] ", answer)
 	return
 }
 
-func d05_CountStacks(data string) (count, height int) {
+func d05_Part2(data string) (answer string) {
+	width, height := d05_CountStacks(data)
+	answer = d05_ParseStack(data, width, height, true)
+	fmt.Println("[Day05 Par2] ", answer)
+	return
+}
+
+func d05_CountStacks(data string) (width, height int) {
 	f, err := os.Open(data)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to open file: %s", data))
@@ -33,7 +41,7 @@ func d05_CountStacks(data string) (count, height int) {
 		s := strings.TrimSpace(input.Text())
 		if strings.HasPrefix(s, "1") {
 			last := string(s[len(s)-1])
-			count, err = strconv.Atoi(last)
+			width, err = strconv.Atoi(last)
 			if err != nil {
 				panic(fmt.Sprintf("Failed to convert %s to number", last))
 			}
@@ -44,7 +52,10 @@ func d05_CountStacks(data string) (count, height int) {
 	panic("Expect row: 1 2 3... but found none")
 }
 
-func d05_ParseStack(data string, numOfStacks, maxStackHeight int) (topCrates string) {
+// width: number of crate stacks
+// height: number of crates from heighest stack, i.e. lines of text to parse
+// before moving instructions.
+func d05_ParseStack(data string, width, height int, moveCratesWithSameOrder bool) (topCrates string) {
 	f, err := os.Open(data)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to open file: %s", data))
@@ -55,37 +66,41 @@ func d05_ParseStack(data string, numOfStacks, maxStackHeight int) (topCrates str
 	// problem: we can't build stack unless we reverse when done parsing.
 	// Fix this by parsign into string, and then build stack with reverse
 	// string order.
-	tt := make([]*string, numOfStacks)
-	for i := 0; i < numOfStacks; i++ {
-		str := ""
-		tt[i] = &str
+	ss := make([]*string, width)
+	for i := 0; i < width; i++ {
+		s := ""
+		ss[i] = &s
 	}
 
 	input := bufio.NewScanner(f)
-	for h := 0; h < maxStackHeight; h++ {
+	for h := 0; h < height; h++ {
 		if input.Scan() == false {
 			panic("Premature termination of input data")
 		}
 		row := input.Text()
-		d05_ParseStackRow(row, tt)
+		d05_ParseStackRow(row, ss)
 	}
 
-	stacks := make([]*stack.Stack, numOfStacks)
-	for i := 0; i < numOfStacks; i++ {
-		t := tt[i]
-		s := stack.New()
-		fmt.Printf("[%d] ", i)
-		for j := 0; j < len(*t); j++ {
-			str := *t
-			crate := string(str[j])
-			fmt.Printf("%s ", crate)
-			s.Push(string(str[j]))
+	stacks := make([]*stack.Stack, width)
+	for i := 0; i < width; i++ {
+		s := ss[i]
+		stack := stack.New()
+		// fmt.Printf("[%d] ", i)
+		for j := 0; j < len(*s); j++ {
+			str := *s
+			// crate := string(str[j])
+			// fmt.Printf("%s ", crate)
+			stack.Push(string(str[j]))
 		}
-		fmt.Println()
-		stacks[i] = s
+		// fmt.Println()
+		stacks[i] = stack
 	}
 
-	d05_MoveStacks(input, stacks)
+	// Skip 2 lines to move instructions.
+	input.Scan()
+	input.Scan()
+
+	d05_ParseMoves(input, stacks, moveCratesWithSameOrder)
 
 	for _, s := range stacks {
 		if s.Len() > 0 {
@@ -106,41 +121,58 @@ func d05_ParseStackRow(row string, ss []*string) {
 	}
 }
 
-func d05_MoveStacks(input *bufio.Scanner, stacks []*stack.Stack) {
-	// Skip 2 lines to moves.
-	input.Scan()
-	input.Scan()
-
+func d05_ParseMoves(input *bufio.Scanner, stacks []*stack.Stack, sameOrder bool) {
+	var count, from, to int
+	var err error
 	for input.Scan() {
 		ss := strings.Split(input.Text(), " from ")
 		s := ss[0][5:]
-		count, err := strconv.Atoi(s)
+		count, err = strconv.Atoi(s)
 		if err != nil {
 			panic(fmt.Sprintf("Failed to parse 'count' from: %s, line: %s", s, input.Text()))
 		}
 
 		ss = strings.Split(ss[1], " to ")
 		s = ss[0]
-		from, err := strconv.Atoi(s)
+		from, err = strconv.Atoi(s)
 		if err != nil {
 			panic(fmt.Sprintf("Failed to parse 'from' from: %s, line: %s", s, input.Text()))
 		}
 
 		s = ss[1]
-		to, err := strconv.Atoi(s)
+		to, err = strconv.Atoi(s)
 		if err != nil {
 			panic(fmt.Sprintf("Failed to parse 'to' from: %s, line: %s", s, input.Text()))
 		}
 
-		fmt.Printf("[%d, %d, %d]\n", count, from, to)
+		// fmt.Printf("[%d, %d, %d]\n", count, from, to)
 
+		/*
+			for i, s := range stacks {
+				fmt.Printf("[%d] ", i+1)
+				printStack(*s)
+			}
+		*/
+		d05_MoveCrates(count, from, to, stacks, sameOrder)
+	}
+
+}
+
+func d05_MoveCrates(count, from, to int, stacks []*stack.Stack, sameOrder bool) {
+	if sameOrder {
+		crates := ""
+		for i := 0; i < count; i++ {
+			c := stacks[from-1].Pop().(string)
+			crates = c + crates
+		}
+		for i := 0; i < count; i++ {
+			c := string(crates[i])
+			stacks[to-1].Push(c)
+		}
+	} else {
 		for i := 0; i < count; i++ {
 			crate := stacks[from-1].Pop()
 			stacks[to-1].Push(crate)
 		}
-	}
-
-	for _, s := range stacks {
-		printStack(*s)
 	}
 }
