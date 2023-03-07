@@ -76,3 +76,16 @@ func stringStackReverse(s *stack.Stack) {
 		s.Push(t[i])
 	}
 }
+
+func copySliceOfString(src []string) []string {
+	dst := make([]string, len(src))
+	copy(dst, src)
+	return dst
+}
+
+func intAbs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
