@@ -86,19 +86,72 @@ func TestD12_PossibleMoves(t *testing.T) {
 		{X: 1, Y: 0},
 		{X: 0, Y: 1},
 	}
-
-	got := m.PossibleMoves(d12_Position{X: 0, Y: 0})
-
-	for i := 0; i < len(expected); i++ {
-		if expected[i] != got[i] {
-			t.Errorf("[%d] Expected: %v, got: %v\n", i, expected[i], got[i])
+	got := m.NextMoves()
+	if len(got) != len(expected) {
+		t.Errorf("[Base case] len(expected): %d != len(got): %d", len(expected), len(got))
+		return
+	}
+	for i := 0; i < len(got); i++ {
+		if !expected[i].Equals(got[i]) {
+			t.Errorf("[Base case] Expected[%d]: %v != got: %v\n", i, expected[i], got[i])
 		}
 	}
+}
 
-	// TODO: test for height diff > 1
-	// TODO: test do not go back
+func TestD12_PossibleMoves_Height(t *testing.T) {
+	m := &d12_Map{}
+	m.Init("../data/d12_example.txt")
+
+	// test for height diff > 1
+	m.C = d12_Position{X: 3, Y: 2}
+	expected := []d12_Position{
+		{X: 3, Y: 3},
+	}
+	got := m.NextMoves()
+	if len(got) != len(expected) {
+		t.Errorf("[height] len(expected): %d != len(got): %d", len(expected), len(got))
+		return
+	}
+	for i := 0; i < len(got); i++ {
+		if !expected[i].Equals(got[i]) {
+			t.Errorf("[height] Expected[%d]: %v != got: %v\n", i, expected[i], got[i])
+		}
+	}
+}
+
+func TestD12_PossibleMoves_DontGoBack(t *testing.T) {
+	m := &d12_Map{}
+	m.Init("../data/d12_example.txt")
+
+	m.Path.Set(0, 1, ">")
+	expected := []d12_Position{
+		{X: 1, Y: 0},
+	}
+	got := m.NextMoves()
+	if len(got) != len(expected) {
+		t.Errorf("[back] len(expected): %d != len(got): %d", len(expected), len(got))
+		return
+	}
+	for i := 0; i < len(got); i++ {
+		if !expected[i].Equals(got[i]) {
+			t.Errorf("[back] Expected[%d]: %v != got: %v\n", i, expected[i], got[i])
+		}
+	}
 	// TODO: test stop by end
 }
+
+func TestD12_PossibleMoves_ReachEnd(t *testing.T) {
+	m := &d12_Map{}
+	m.Init("../data/d12_example.txt")
+	m.C = m.E
+
+	expected := []d12_Position{}
+	got := m.NextMoves()
+	if len(got) != len(expected) {
+		t.Errorf("[end] len(expected): %d != len(got): %d", len(expected), len(got))
+	}
+}
+
 func TestD12_Part1(t *testing.T) {
 	expected := 31
 	got := d12_Part1("../data/d12_example.txt")
