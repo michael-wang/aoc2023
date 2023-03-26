@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/golang-collections/collections/stack"
 )
@@ -88,4 +89,15 @@ func intAbs(a int) int {
 		return -a
 	}
 	return a
+}
+
+func pause(msg string) {
+	fmt.Println(msg)
+	os.Stdin.Read(make([]byte, 1))
+}
+
+func stringsReplaceByte(s string, i int, c byte) string {
+	out := []byte(s)
+	out[i] = c
+	return string(out)
 }

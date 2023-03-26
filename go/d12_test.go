@@ -83,8 +83,8 @@ func TestD12_PossibleMoves(t *testing.T) {
 	m.Init("../data/d12_example.txt")
 
 	expected := []d12_Position{
-		{X: 1, Y: 0},
 		{X: 0, Y: 1},
+		{X: 1, Y: 0},
 	}
 	got := m.NextMoves()
 	if len(got) != len(expected) {
@@ -106,6 +106,8 @@ func TestD12_PossibleMoves_Height(t *testing.T) {
 	m.C = d12_Position{X: 3, Y: 2}
 	expected := []d12_Position{
 		{X: 3, Y: 3},
+		{X: 2, Y: 2},
+		{X: 3, Y: 1},
 	}
 	got := m.NextMoves()
 	if len(got) != len(expected) {
@@ -123,7 +125,7 @@ func TestD12_PossibleMoves_DontGoBack(t *testing.T) {
 	m := &d12_Map{}
 	m.Init("../data/d12_example.txt")
 
-	m.Path.Set(0, 1, ">")
+	m.Set(0, 1, '>')
 	expected := []d12_Position{
 		{X: 1, Y: 0},
 	}
@@ -137,7 +139,6 @@ func TestD12_PossibleMoves_DontGoBack(t *testing.T) {
 			t.Errorf("[back] Expected[%d]: %v != got: %v\n", i, expected[i], got[i])
 		}
 	}
-	// TODO: test stop by end
 }
 
 func TestD12_PossibleMoves_ReachEnd(t *testing.T) {
@@ -154,7 +155,7 @@ func TestD12_PossibleMoves_ReachEnd(t *testing.T) {
 
 func TestD12_Part1(t *testing.T) {
 	expected := 31
-	got := d12_Part1("../data/d12_example.txt")
+	got, _ := d12_Part1("../data/d12_example.txt")
 	if got != expected {
 		t.Errorf("Day 12 Part 1 failed, expect answer: %d, but got: %d", expected, got)
 	}
