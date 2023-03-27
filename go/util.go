@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-
-	"github.com/golang-collections/collections/stack"
 )
 
 func slicePop(s [][]int, i int) [][]int {
@@ -49,48 +47,6 @@ func shortestString(ss []string) (index int) {
 	return
 }
 
-func newStacks(count int) (ss map[int]*stack.Stack) {
-	ss = make(map[int]*stack.Stack, count)
-	for i := 0; i < count; i++ {
-		ss[i] = stack.New()
-	}
-	return
-}
-
-func printStack(s stack.Stack) {
-	str := ""
-	size := s.Len()
-	for i := 0; i < size; i++ {
-		str = fmt.Sprintf("%v %s", s.Pop(), str)
-	}
-	fmt.Println(str)
-}
-
-func stringStackReverse(s *stack.Stack) {
-	t := []string{}
-	for i := s.Len(); i >= 0; i-- {
-		ele := s.Pop()
-		fmt.Printf("%d %v\n", i, ele)
-		t = append(t, ele.(string))
-	}
-	for i := len(t); i >= 0; i-- {
-		s.Push(t[i])
-	}
-}
-
-func copySliceOfString(src []string) []string {
-	dst := make([]string, len(src))
-	copy(dst, src)
-	return dst
-}
-
-func intAbs(a int) int {
-	if a < 0 {
-		return -a
-	}
-	return a
-}
-
 func pause(msg string) {
 	fmt.Println(msg)
 	os.Stdin.Read(make([]byte, 1))
@@ -100,4 +56,44 @@ func stringsReplaceByte(s string, i int, c byte) string {
 	out := []byte(s)
 	out[i] = c
 	return string(out)
+}
+
+type vec2 struct {
+	X int
+	Y int
+}
+
+func (v vec2) Copy() vec2 {
+	return vec2{
+		X: v.X,
+		Y: v.Y,
+	}
+}
+
+func (v vec2) Equals(other vec2) bool {
+	return v.X == other.X && v.Y == other.Y
+}
+
+func (v vec2) ToString() string {
+	return fmt.Sprintf("(%d, %d)", v.X, v.Y)
+}
+
+type sliceS []string
+
+func (s sliceS) Equals(other sliceS) bool {
+	if len(s) != len(other) {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] != other[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func (s sliceS) DeepCopy() sliceS {
+	t := make([]string, len(s))
+	copy(t, s)
+	return t
 }

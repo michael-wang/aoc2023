@@ -15,9 +15,9 @@ func TestD12_MapParse(t *testing.T) {
 		"acctuvwj",
 		"abdefghi",
 	}
-	expS := d12_Position{X: 0, Y: 0}
-	expE := d12_Position{X: 5, Y: 2}
-	expC := d12_Position{X: 0, Y: 0}
+	expS := vec2{X: 0, Y: 0}
+	expE := vec2{X: 5, Y: 2}
+	expC := vec2{X: 0, Y: 0}
 
 	m := &d12_Map{}
 	m.Init("../data/d12_example.txt")
@@ -82,7 +82,7 @@ func TestD12_PossibleMoves(t *testing.T) {
 	m := &d12_Map{}
 	m.Init("../data/d12_example.txt")
 
-	expected := []d12_Position{
+	expected := []vec2{
 		{X: 0, Y: 1},
 		{X: 1, Y: 0},
 	}
@@ -103,8 +103,8 @@ func TestD12_PossibleMoves_Height(t *testing.T) {
 	m.Init("../data/d12_example.txt")
 
 	// test for height diff > 1
-	m.C = d12_Position{X: 3, Y: 2}
-	expected := []d12_Position{
+	m.C = vec2{X: 3, Y: 2}
+	expected := []vec2{
 		{X: 3, Y: 3},
 		{X: 2, Y: 2},
 		{X: 3, Y: 1},
@@ -126,7 +126,7 @@ func TestD12_PossibleMoves_DontGoBack(t *testing.T) {
 	m.Init("../data/d12_example.txt")
 
 	m.Set(0, 1, '>')
-	expected := []d12_Position{
+	expected := []vec2{
 		{X: 1, Y: 0},
 	}
 	got := m.NextMoves()
@@ -146,7 +146,7 @@ func TestD12_PossibleMoves_ReachEnd(t *testing.T) {
 	m.Init("../data/d12_example.txt")
 	m.C = m.E
 
-	expected := []d12_Position{}
+	expected := []vec2{}
 	got := m.NextMoves()
 	if len(got) != len(expected) {
 		t.Errorf("[end] len(expected): %d != len(got): %d", len(expected), len(got))
@@ -158,5 +158,30 @@ func TestD12_Part1(t *testing.T) {
 	got, _ := d12_Part1("../data/d12_example.txt")
 	if got != expected {
 		t.Errorf("Day 12 Part 1 failed, expect answer: %d, but got: %d", expected, got)
+	}
+}
+
+func TestD12_Deadends(t *testing.T) {
+	m := &d12_Map{}
+	m.Init("../data/d12.txt")
+
+	mm := d12_Maps{}
+	mm = append(mm, m)
+
+	if !mm.Dup(m) {
+		t.Error("Expect duplicated but not")
+	}
+
+	m2 := m.DeepCopy()
+	next := m2.NextMoves()[0]
+	m2.Move(next)
+	if mm.Dup(m2) {
+		t.Error("Expect NOT duplicated but IS")
+	}
+	mm = append(mm, m2)
+
+	m3 := m2.DeepCopy()
+	if !mm.Dup(m3) {
+		t.Error("Expect duplicated but not")
 	}
 }
