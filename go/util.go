@@ -97,3 +97,40 @@ func (s sliceS) DeepCopy() sliceS {
 	copy(t, s)
 	return t
 }
+
+type sliceVec2 []vec2
+
+func (vv sliceVec2) DeepCopy() sliceVec2 {
+	dst := make(sliceVec2, len(vv))
+	copy(dst, vv)
+	return dst
+}
+
+func (vv sliceVec2) Equals(other sliceVec2) bool {
+	if len(vv) != len(other) {
+		return false
+	}
+	for i := 0; i < len(vv); i++ {
+		if !vv[i].Equals(other[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func (vv sliceVec2) Dup(other vec2) bool {
+	for i := 0; i < len(vv); i++ {
+		if other.Equals(vv[i]) {
+			return true
+		}
+	}
+	return false
+}
+
+type int2D [][]int
+
+func (ii int2D) Print() {
+	for y := range ii {
+		fmt.Println(ii[y])
+	}
+}
