@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -40,5 +41,47 @@ func TestD12_MapParse(t *testing.T) {
 				return
 			}
 		}
+	}
+}
+
+func TestD12_Matrix2D_Copy(t *testing.T) {
+	_, _, source := d12_Load("../data/d12_example.txt")
+	value := 1
+	clone := source.Copy(value)
+
+	fmt.Println("source:")
+	source.Print()
+	fmt.Println("clone:")
+	clone.Print()
+
+	if len(source) != len(clone) {
+		t.Errorf("len(source):%d != len(clone): %d", len(source), len(clone))
+	}
+	for y := range source {
+		if len(source[y]) != len(clone[y]) {
+			t.Errorf("y: %d, len(source row): %d != len(clone row): %d", y, len(source[y]), len(clone[y]))
+		}
+		for x := range clone[y] {
+			if clone[y][x] != value {
+				t.Errorf("y: %d, x: %d, clone[y][x]: %d != value: %d", y, x, clone[y][y], value)
+			}
+		}
+	}
+}
+func TestD12_Matrix2D_DeepCopy(t *testing.T) {
+	_, _, source := d12_Load("../data/d12_example.txt")
+	clone := source.DeepCopy()
+
+	expected := source[0][0]
+	got := clone[0][0]
+
+	source[0][0] = -1
+	fmt.Println("source:")
+	source.Print()
+	fmt.Println("clone:")
+	clone.Print()
+
+	if got != expected {
+		t.Errorf("Expect clone[0][0] not correlated with source[0][0] but it is")
 	}
 }

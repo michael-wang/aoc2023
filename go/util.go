@@ -52,10 +52,30 @@ func pause(msg string) {
 	os.Stdin.Read(make([]byte, 1))
 }
 
-type int2D [][]int
+type mtx22 [][]int
 
-func (ii int2D) Print() {
-	for y := range ii {
-		fmt.Println(ii[y])
+func (m mtx22) Copy(value int) (out mtx22) {
+	out = make(mtx22, len(m))
+	for y := range m {
+		out[y] = make([]int, len(m[y]))
+		for x := range m[y] {
+			out[y][x] = value
+		}
 	}
+	return
+}
+
+func (m mtx22) Print() {
+	for y := range m {
+		fmt.Println(m[y])
+	}
+}
+
+func (m mtx22) DeepCopy() (out mtx22) {
+	out = make(mtx22, len(m))
+	for y := range m {
+		out[y] = make([]int, len(m[y]))
+		copy(out[y], m[y])
+	}
+	return out
 }

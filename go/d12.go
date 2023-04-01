@@ -10,17 +10,33 @@ import (
 
 func d12() {
 	d12_Part1("../data/d12.txt")
-	// d12_Part2("../data/d12.txt")
+	d12_Part2("../data/d12.txt")
 }
 
 func d12_Part1(data string) (answer int) {
-	start, end, m := d12_Load(data)
-	answer = d12_Dijkstra(start, end, m)
+	start, end, heightMap := d12_Load(data)
+	answer = d12_Dijkstra(start, end, heightMap)
 	fmt.Println("[Day10 Part 1] answer: ", answer)
 	return
 }
 
 func d12_Part2(data string) (answer int) {
+	answer = math.MaxInt
+	_, end, heightMap := d12_Load(data)
+	for y := 0; y < len(heightMap); y++ {
+		for x := 0; x < len(heightMap[y]); x++ {
+			if heightMap[y][x] != 0 {
+				continue
+			}
+
+			start := point{x, y, heightMap[y][x], 0}
+			dist := d12_Dijkstra(start, end, heightMap)
+			if dist < answer {
+				answer = dist
+			}
+		}
+	}
+	fmt.Println("[Day10 Part 2] answer: ", answer)
 	return
 }
 
@@ -75,7 +91,7 @@ func (pq *d12_Path) Pop() interface{} {
 	return x
 }
 
-func d12_Load(data string) (start, end point, m int2D) {
+func d12_Load(data string) (start, end point, m mtx22) {
 	// Open file
 	f, err := os.Open(data)
 	if err != nil {
@@ -105,16 +121,11 @@ func d12_Load(data string) (start, end point, m int2D) {
 
 // Return shorted path's distance.
 // Assume heightMap is Y major.
-func d12_Dijkstra(start, end point, heightMap int2D) int {
-	fmt.Printf("start: %s, end: %s", start.ToString(), end.ToString())
-	distances := make(int2D, len(heightMap))
-	for y := range distances {
-		distances[y] = make([]int, len(heightMap[y]))
-		for x := range distances[y] {
-			distances[y][x] = math.MaxInt32
-		}
-	}
-	distances[start.X][start.Y] = 0
+// If no valid path found, return math.
+func d12_Dijkstra(start, end point, heightMap mtx22) int {
+	// fmt.Printf("start: %s, end: %s\n", start.ToString(), end.ToString())
+	distances := heightMap.Copy(math.MaxInt)
+	distances[start.Y][start.X] = 0
 
 	path := make(d12_Path, 1)
 	path[0] = start
@@ -144,9 +155,9 @@ func d12_Dijkstra(start, end point, heightMap int2D) int {
 			}
 		}
 	}
-	fmt.Println("height map:")
-	heightMap.Print()
-	fmt.Println("distances:")
-	distances.Print()
-	return -1
+	// fmt.Println("height map:")
+	// heightMap.Print()
+	// fmt.Println("distances:")
+	// distances.Print()
+	return math.MaxInt
 }
