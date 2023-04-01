@@ -13,4 +13,5 @@ func main() {
 	// d10()
 	// d11()
 	d12()
+	pause("Press ENTER to continue...")
 }

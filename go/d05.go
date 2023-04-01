@@ -10,6 +10,7 @@ import (
 	"github.com/golang-collections/collections/stack"
 )
 
+//lint:ignore U1000 ignore
 func d05() {
 	d05_Part1("../data/d05.txt")
 	d05_Part2("../data/d05.txt")
@@ -74,7 +75,7 @@ func d05_ParseStack(data string, width, height int, moveCratesWithSameOrder bool
 
 	input := bufio.NewScanner(f)
 	for h := 0; h < height; h++ {
-		if input.Scan() == false {
+		if !input.Scan() {
 			panic("Premature termination of input data")
 		}
 		row := input.Text()

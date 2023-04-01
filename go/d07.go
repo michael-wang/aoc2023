@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//lint:ignore U1000 ignore
 func d07() {
 	d07_Part1("../data/d07.txt")
 	d07_Part2("../data/d07.txt")
@@ -159,7 +160,6 @@ func d07_Parse(input *bufio.Scanner, root, curr *d07_Node) {
 	if curr.Type == d07_Dir {
 		curr.SumChildrenSizes()
 	}
-	return
 }
 
 func d07_SumDirSizes(node *d07_Node, limit int) (sum int) {

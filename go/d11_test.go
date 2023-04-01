@@ -92,7 +92,7 @@ func TestD11_Part2(t *testing.T) {
 	}
 
 	keys := []int{}
-	for k, _ := range expected {
+	for k := range expected {
 		keys = append(keys, k)
 	}
 	sort.Ints(keys)

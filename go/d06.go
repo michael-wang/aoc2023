@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+//lint:ignore U1000 ignore
 func d06() {
 	d06_Part1("../data/d06.txt")
 	d06_Part2("../data/d06.txt")
@@ -65,10 +66,4 @@ func d06_FindMarker(line string, n int) (index int) {
 	next:
 	}
 	panic(fmt.Sprintf("Expect has marker but this line does not: %s", line))
-}
-
-func d06_PrintMap(m map[rune]int) {
-	for k, v := range m {
-		fmt.Printf("%c : %d\n", k, v)
-	}
 }

@@ -7,6 +7,7 @@ import (
 	"strconv"
 )
 
+//lint:ignore U1000 ignore
 func d01() {
 	d01_Part1("../data/day01.txt")
 	d01_Part2("../data/day01.txt")
@@ -49,7 +50,7 @@ func d01_Parse(name string) [][]int {
 			}
 			elf = append(elf, calories)
 
-			if input.Scan() == false {
+			if !input.Scan() {
 				elves = append(elves, elf)
 				return elves
 			}

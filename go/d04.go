@@ -8,9 +8,11 @@ import (
 	"strings"
 )
 
+//lint:ignore U1000 ignore
 func d04() {
 	d04_Part1and2("../data/d04.txt")
 }
+
 func d04_Part1and2(data string) (contains, overlap int) {
 	f, err := os.Open(data)
 	if err != nil {

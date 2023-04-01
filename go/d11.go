@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+//lint:ignore U1000 ignore
 func d11() {
 	d11_Part1("../data/d11.txt")
 	d11_Part2("../data/d11.txt")

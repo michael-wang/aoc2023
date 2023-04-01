@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//lint:ignore U1000 ignore
 func d10() {
 	d10_Part1("../data/d10.txt")
 	d10_Part2("../data/d10.txt")
@@ -24,13 +25,6 @@ func d10_Part1(data string) (answer int) {
 type d10_Instruction struct {
 	Inst int
 	X    int
-}
-
-func (inst d10_Instruction) toString() string {
-	if inst.Inst == d10_Noop {
-		return "noop"
-	}
-	return fmt.Sprintf("addx %d", inst.X)
 }
 
 const (
@@ -57,10 +51,6 @@ func d10_NewCPU(data string) (cpu *d10_CPU) {
 	cpu.LoadInstructions(data)
 	cpu.SetPC(0)
 	return
-}
-
-func (cpu *d10_CPU) toString() string {
-	return fmt.Sprintf("{ X: %d, PC: %d, Inst: %s, ExecCycle: %d}\n", cpu.X, cpu.PC, cpu.Mem[cpu.PC].toString(), cpu.ExecCycle)
 }
 
 func (cpu *d10_CPU) LoadInstructions(data string) {

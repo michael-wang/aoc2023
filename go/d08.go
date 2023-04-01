@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+//lint:ignore U1000 ignore
 func d08() {
 	d08_Part1("../data/d08.txt")
 	d08_Part2("../data/d08.txt")

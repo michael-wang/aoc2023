@@ -38,6 +38,7 @@ func (r d02_Round) toString() string {
 	return fmt.Sprintf("%s    %s    %s", m[r.op], m[r.my], n[r.result])
 }
 
+//lint:ignore U1000 ignore
 func d02() {
 	d02_Part1("../data/day02.txt")
 	d02_Part2("../data/day02.txt")

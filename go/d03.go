@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+//lint:ignore U1000 ignore
 func d03() {
 	d03_Part1("../data/day03.txt")
 	d03_Part2("../data/day03.txt")

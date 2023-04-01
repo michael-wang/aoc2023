@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//lint:ignore U1000 ignore
 func d09() {
 	d09_Part1("../data/d09.txt")
 	d09_Part2("../data/d09.txt")
