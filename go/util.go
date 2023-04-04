@@ -79,3 +79,7 @@ func (m mtx22) DeepCopy() (out mtx22) {
 	}
 	return out
 }
+
+type vec2 struct {
+	X, Y interface{}
+}
