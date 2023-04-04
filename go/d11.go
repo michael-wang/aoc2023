@@ -25,7 +25,7 @@ func d11_Part1(data string) (answer int) {
 	you.PrintInspectCounts()
 
 	answer = you.LevelOfMonkeyBusiness()
-	fmt.Println("[Day10 Part 1] answer: ", answer)
+	fmt.Println("[Day11 Part 1] answer: ", answer)
 	return
 }
 
@@ -45,7 +45,7 @@ func d11_Part2(data string) (answer int) {
 	you.PrintInspectCounts()
 
 	answer = you.LevelOfMonkeyBusiness()
-	fmt.Println("[Day10 Part 2] answer: ", answer)
+	fmt.Println("[Day11 Part 2] answer: ", answer)
 	return
 }
 

@@ -16,7 +16,7 @@ func d12() {
 func d12_Part1(data string) (answer int) {
 	start, end, heightMap := d12_Load(data)
 	answer = d12_Dijkstra(start, end, heightMap)
-	fmt.Println("[Day10 Part 1] answer: ", answer)
+	fmt.Println("[Day13 Part 1] answer: ", answer)
 	return
 }
 
@@ -36,7 +36,7 @@ func d12_Part2(data string) (answer int) {
 			}
 		}
 	}
-	fmt.Println("[Day10 Part 2] answer: ", answer)
+	fmt.Println("[Day13 Part 2] answer: ", answer)
 	return
 }
 
