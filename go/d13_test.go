@@ -4,212 +4,143 @@ import (
 	"testing"
 )
 
-func TestD13_find(t *testing.T) {
-	row := "[1,23,456]"
-	list := nestedList{}
-	end := len(row) - 1
-	notNumber := func(b byte) bool {
-		return b < '0' || '9' < b
+func TestD13_Swap(t *testing.T) {
+	row := "[1, 2, 3]"
+	packet := &d13_Packet{}
+	packet.Parse(row, 0, len(row))
+	packet.Swap(0, 2)
+
+	exp := d13_Packet{
+		NestedList: NestedList{3, 2, 1},
 	}
-	got := list.find(row, notNumber, 2, end)
-	exp := 2
-	if got != exp {
-		t.Errorf("Find %v in '%s' where start: %d, got: %d but expect: %d", ',', row, 2, got, exp)
+	if packet.Less(exp) != 0 {
+		t.Errorf("Expect %v, got: %v", exp, packet)
 	}
 
-	got = list.find(row, notNumber, 4, end)
-	exp = 5
-	if got != exp {
-		t.Errorf("Find %v in '%s' where start: %d, got: %d but expect: %d", ',', row, 4, got, exp)
-	}
-
-	got = list.find(row, notNumber, 7, end)
-	exp = 9
-	if got != exp {
-		t.Errorf("Find %v in '%s' where start: %d, got: %d but expect: %d", ',', row, 7, got, exp)
+	row = "[[1], [2]]"
+	packet.Clear()
+	packet.Parse(row, 0, len(row))
+	packet.Swap(0, 1)
+	exp.Clear()
+	expRow := "[[2], [1]]"
+	exp.Parse(expRow, 0, len(expRow))
+	if packet.Less(exp) != 0 {
+		t.Errorf("Expect %v, got: %v", exp, packet)
 	}
 }
-
-func TestD13_FindPair(t *testing.T) {
-	row := "[9]"
-	list := nestedList{}
-	start, end := 0, len(row)
-	got := list.findPair(row, '[', ']', start, end)
-	exp := 2
-	check := func(got, exp, start, end int) {
-		if got != exp {
-			t.Errorf("Failed to find pair for '%s', start: %d, end: %d, got: %d, expected: %d", row, start, end, got, exp)
-		}
-	}
-	check(got, exp, start, end)
-
-	row = "[11,[22,[33,44]]]"
-	start, end = 0, len(row)
-	got = list.findPair(row, '[', ']', start, end)
-	exp = 16
-	check(got, exp, start, end)
-
-	start, end = 4, len(row)
-	got = list.findPair(row, '[', ']', start, end)
-	exp = 15
-	check(got, exp, start, end)
-
-	start, end = 8, len(row)
-	got = list.findPair(row, '[', ']', start, end)
-	exp = 14
-	check(got, exp, start, end)
-}
-
-func TestD13_NestedListParse(t *testing.T) {
-	row := "[]"
-	list := nestedList{}
-	start, end := 0, len(row)
-	expLen := 0
-	expNext := len(row)
-	gotNext := list.Parse(row, '[', ']', start, end)
-	gotLen := len(list)
-	check := func(row string, list nestedList, expLen, gotLen, expNext, gotNext, start, end int) {
-		if gotLen != expLen {
-			t.Errorf("Failed to parse: '%s', expected: %d, got: %d, start: %d, end: %d", row, expLen, gotLen, start, end)
-		}
-		if gotNext != expNext {
-			t.Errorf("Wrong next value for parsing: '%s', expected: %d, got: %d, start: %d, end: %d", row, expNext, gotNext, start, end)
-		}
-	}
-	check(row, list, expLen, gotLen, expNext, gotNext, start, end)
-
-	row = "[1,22,333]"
-	list.Clear()
-	start, end = 0, len(row)
-	expLen = 3
-	expNext = len(row)
-	gotNext = list.Parse(row, '[', ']', start, end)
-	gotLen = len(list)
-	check(row, list, expLen, gotLen, expNext, gotNext, start, end)
-
-	row = "[[1], [2,	3 ,4]]"
-	list.Clear()
-	start, end = 0, len(row)
-	expLen = 2
-	expNext = len(row)
-	gotNext = list.Parse(row, '[', ']', start, end)
-	gotLen = len(list)
-	check(row, list, expLen, gotLen, expNext, gotNext, start, end)
-}
-
-func TestD13_CorrectOrder(t *testing.T) {
-	left := &nestedList{}
+func TestD13_Less(t *testing.T) {
+	left := &d13_Packet{}
 	row := "[1,1,3,1,1]"
-	left.Parse(row, '[', ']', 0, len(row))
-	right := &nestedList{}
+	left.Parse(row, 0, len(row))
+	right := &d13_Packet{}
 	row = "[1,1,5,1,1]"
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected := 1
-	got := left.D13_CorrectOrder(*right)
+	got := left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[[1],[2,3,4]]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[[1],4]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = 1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[9]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[[8,7,6]]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = -1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[[4,4],4,4]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[[4,4],4,4,4]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = 1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[7,7,7,7]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[7,7,7]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = -1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[3]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = 1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[[[]]]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[[]]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = -1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[1,[2,[3,[4,[5,6,7]]]],8,9]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[1,[2,[3,[4,[5,6,0]]]],8,9]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = -1
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
 
 	row = "[7,7,7]"
 	left.Clear()
-	left.Parse(row, '[', ']', 0, len(row))
+	left.Parse(row, 0, len(row))
 
 	row = "[7,7,7]"
 	right.Clear()
-	right.Parse(row, '[', ']', 0, len(row))
+	right.Parse(row, 0, len(row))
 	expected = 0
-	got = left.D13_CorrectOrder(*right)
+	got = left.Less(*right)
 	if expected != got {
 		t.Errorf("%v vs %v, expected: %d, got: %d", left, right, expected, got)
 	}
