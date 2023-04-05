@@ -85,3 +85,21 @@ func (l NestedList) List(i int) *NestedList {
 	}
 	return &v
 }
+
+func (l NestedList) String() string {
+	s, sep := "[", ""
+	for i := 0; i < len(l); i++ {
+		pInt := l.Int(i)
+		pList := l.List(i)
+
+		if pInt != nil {
+			s += fmt.Sprintf("%s%d", sep, *pInt)
+		} else if pList != nil {
+			s += fmt.Sprintf("%s%s", sep, pList.String())
+		} else {
+			s += fmt.Sprintf("%s%v", sep, l[i])
+		}
+		sep = ","
+	}
+	return s + "]"
+}
