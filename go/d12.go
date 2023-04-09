@@ -91,7 +91,7 @@ func (pq *d12_Path) Pop() interface{} {
 	return x
 }
 
-func d12_Load(data string) (start, end point, m mtx22) {
+func d12_Load(data string) (start, end point, m mtx) {
 	// Open file
 	f, err := os.Open(data)
 	if err != nil {
@@ -122,7 +122,7 @@ func d12_Load(data string) (start, end point, m mtx22) {
 // Return shorted path's distance.
 // Assume heightMap is Y major.
 // If no valid path found, return math.
-func d12_Dijkstra(start, end point, heightMap mtx22) int {
+func d12_Dijkstra(start, end point, heightMap mtx) int {
 	// fmt.Printf("start: %s, end: %s\n", start.ToString(), end.ToString())
 	distances := heightMap.Copy(math.MaxInt)
 	distances[start.Y][start.X] = 0

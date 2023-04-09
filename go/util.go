@@ -52,34 +52,42 @@ func pause(msg string) {
 	os.Stdin.Read(make([]byte, 1))
 }
 
-type mtx22 [][]int
-
-func (m mtx22) Copy(value int) (out mtx22) {
-	out = make(mtx22, len(m))
-	for y := range m {
-		out[y] = make([]int, len(m[y]))
-		for x := range m[y] {
-			out[y][x] = value
+func nextSymbolInRange(bb []byte, i int, b1, b2 byte) int {
+	for ; i < len(bb); i++ {
+		if b1 <= bb[i] && bb[i] <= b2 {
+			break
 		}
 	}
-	return
+	return i
 }
 
-func (m mtx22) Print() {
-	for y := range m {
-		fmt.Println(m[y])
+func nextSymbolExcludeRange(bb []byte, i int, b1, b2 byte) int {
+	for ; i < len(bb); i++ {
+		if bb[i] < b1 || b2 < bb[i] {
+			break
+		}
 	}
+	return i
 }
 
-func (m mtx22) DeepCopy() (out mtx22) {
-	out = make(mtx22, len(m))
-	for y := range m {
-		out[y] = make([]int, len(m[y]))
-		copy(out[y], m[y])
+func nextNoneNumber(bb []byte, i int) int {
+	return nextSymbolExcludeRange(bb, i, '0', '9')
+}
+
+func nextNumber(bb []byte, i int) int {
+	return nextSymbolInRange(bb, i, '0', '9')
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
 	}
-	return out
+	return b
 }
 
-type vec2 struct {
-	X, Y interface{}
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
