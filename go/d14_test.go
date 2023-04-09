@@ -66,3 +66,17 @@ func TestD14_Part1(t *testing.T) {
 		t.Errorf("Part 1 expected: %d, got: %d", exp, got)
 	}
 }
+
+func TestD14_Part2(t *testing.T) {
+	exp := 93
+	got := d14_Part2("../data/d14_example.txt")
+	if got != exp {
+		t.Errorf("Part 2 example expected: %d, got: %d", exp, got)
+	}
+
+	exp = 29805
+	got = d14_Part2("../data/d14.txt")
+	if got != exp {
+		t.Errorf("Part 2 expected: %d, got: %d", exp, got)
+	}
+}
